@@ -33,7 +33,7 @@ declare global{
     function showDirectoryPicker(option?:DirectoryPickerOption): Promise<FileSystemDirectoryHandle>;
 }
 
-export async function fileInit(input:File[]|FileList|HTMLInputElement):Promise<FileInit[]>{
+export async function fileList(input:File[] | FileList | HTMLInputElement):Promise<FileInit[]>{
     return await Promise.all([...input instanceof HTMLInputElement ? input.files ?? [] : input].map(async f => [f.name, new Uint8Array(await f.arrayBuffer())]));
 }
 
@@ -60,13 +60,13 @@ export function fsWrite(name:string, body:BlobPart):void{
 }
 
 export async function fsNativeOpen(save?:boolean, option?:FilePickerOption):Promise<FileSystemFileHandle>{
-    const [fs] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
+    const [fsf] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
 
-    return fs;
+    return fsf;
 }
 
-export async function fsNativeRead<T extends keyof FileType>(fs:FileSystemFileHandle, type:T):Promise<FileType[T]>{
-    const file = await fs.getFile();
+export async function fsNativeRead<T extends keyof FileType>(fsf:FileSystemFileHandle, type:T):Promise<FileType[T]>{
+    const file = await fsf.getFile();
 
     switch(type){
         case "blob": return <FileType[T]>new Blob([file]);
@@ -78,17 +78,15 @@ export async function fsNativeRead<T extends keyof FileType>(fs:FileSystemFileHa
     }
 }
 
-export async function fsNativeWrite(fs:FileSystemFileHandle, data:FileSystemWriteChunkType):Promise<void>{
-    const w = await fs.createWritable();
+export async function fsNativeWrite(fsf:FileSystemFileHandle, data:FileSystemWriteChunkType):Promise<void>{
+    const w = await fsf.createWritable();
 
     await w.write(data);
     await w.close();
 }
 
-export async function fsDirectoryNative(){
-    const fs = await showDirectoryPicker();
+export async function fsNativeDirectory(option?:DirectoryPickerOption){
+    const fsd = await showDirectoryPicker(option);
 
-    return {
-        fs: fs
-    };
+    return fsd;
 }
