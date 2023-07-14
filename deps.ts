@@ -1,0 +1,2 @@
+// @deno-types="https://deno.land/x/simple_utility@v1.1.0/mod.ts"
+export {type FileInit, fetchExtend, randomBin, base64Encode} from "https://esm.sh/gh/dojyorin/deno_simple_utility@v1.1.0/mod.universal.ts?bundle&target=esnext";

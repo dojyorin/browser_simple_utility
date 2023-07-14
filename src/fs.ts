@@ -3,7 +3,9 @@
 /// <reference lib="dom"/>
 /// <reference lib="dom.iterable"/>
 
-interface FilePickerOption{
+import {type FileInit, base64Encode} from "../deps.ts";
+
+export interface FilePickerOption{
     excludeAcceptAllOption?: boolean;
     types?: {
         description?: string;
@@ -11,27 +13,27 @@ interface FilePickerOption{
     }[];
 }
 
-export interface OpenFilePickerOption extends FilePickerOption{
-    multiple?: boolean;
-}
-
-export interface SaveFilePickerOption extends FilePickerOption{
-    suggestedName?: string;
+export interface DirectoryPickerOption{
+    id?: number;
+    mode?: "read" | "readwrite";
+    startIn?: FileSystemHandle | "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos";
 }
 
 export interface FileType{
     "blob": Blob;
     "byte": Uint8Array;
+    "buffer": ArrayBuffer;
     "text": string;
     "base64": string;
 }
 
 declare global{
-    function showOpenFilePicker(option?:OpenFilePickerOption): Promise<FileSystemFileHandle[]>;
-    function showSaveFilePicker(option?:SaveFilePickerOption): Promise<FileSystemFileHandle>;
+    function showOpenFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle[]>;
+    function showSaveFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle>;
+    function showDirectoryPicker(option?:DirectoryPickerOption): Promise<FileSystemDirectoryHandle>;
 }
 
-export async function fileInit(input:File[]|FileList|HTMLInputElement){
+export async function fileInit(input:File[]|FileList|HTMLInputElement):Promise<FileInit[]>{
     return await Promise.all([...input instanceof HTMLInputElement ? input.files ?? [] : input].map(async f => [f.name, new Uint8Array(await f.arrayBuffer())]));
 }
 
@@ -57,42 +59,36 @@ export function fsWrite(name:string, body:BlobPart):void{
     URL.revokeObjectURL(anchor.href);
 }
 
-export async function fsNativeRead<T extends keyof FileType>(fs:FileSystemFileHandle, type:T){
-    const picker = await showOpenFilePicker();
-    const handle = fs instanceof FileSystemFileHandle ? fs : ().shift();
-    const file = await handle.getFile();
+export async function fsNativeOpen(save?:boolean, option?:FilePickerOption):Promise<FileSystemFileHandle>{
+    const [fs] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
 
-    return {
-        fs: handle,
-        data: {
-            blob: new Blob([file]),
-            buffer: await file.arrayBuffer(),
-            text: await file.text(),
-            code: await new Promise((res)=>{
-                const reader = new FileReader();
-                reader.addEventListener("load", () => res(reader.result));
-                reader.readAsDataURL(file);
-            })
-        }[type]
-    };
+    return fs;
 }
 
-export async function fsNativeWrite(fs, data){
-    const handle = fs instanceof FileSystemFileHandle ? fs : await showSaveFilePicker(fs);
-    const writer = await handle.createWritable();
+export async function fsNativeRead<T extends keyof FileType>(fs:FileSystemFileHandle, type:T):Promise<FileType[T]>{
+    const file = await fs.getFile();
 
-    await writer.write(data);
-    await writer.close();
-
-    return {
-        fs: handle
-    };
+    switch(type){
+        case "blob": return <FileType[T]>new Blob([file]);
+        case "byte": return <FileType[T]>new Uint8Array(await file.arrayBuffer());
+        case "buffer": return <FileType[T]>await file.arrayBuffer();
+        case "text": return <FileType[T]>await file.text();
+        case "base64": return <FileType[T]>base64Encode(new Uint8Array(await file.arrayBuffer()));
+        default: throw new Error();
+    }
 }
 
-async function fsNativeDirectory(){
-    const handle = await showDirectoryPicker();
+export async function fsNativeWrite(fs:FileSystemFileHandle, data:FileSystemWriteChunkType):Promise<void>{
+    const w = await fs.createWritable();
+
+    await w.write(data);
+    await w.close();
+}
+
+export async function fsDirectoryNative(){
+    const fs = await showDirectoryPicker();
 
     return {
-        fs: handle
+        fs: fs
     };
 }
