@@ -3,7 +3,14 @@
 /// <reference lib="dom"/>
 /// <reference lib="dom.iterable"/>
 
-export function $id(id:string):Element{
+/**
+* Shortcut for `getElementById()` and non nullable.
+* @example
+* ```ts
+* const element = docI("my-text-area");
+* ```
+*/
+export function docI(id:string):Element{
     const e = document.getElementById(id);
 
     if(!e){
@@ -13,14 +20,35 @@ export function $id(id:string):Element{
     return e;
 }
 
-export function $nn(name:string):Element[]{
+/**
+* Shortcut for `getElementsByName()` and converted from `NodeList` to `Element[]`.
+* @example
+* ```ts
+* const elements = docN("my-text-area");
+* ```
+*/
+export function docN(name:string):Element[]{
     return [...document.getElementsByName(name)];
 }
 
-export function $cn(name:string):Element[]{
+/**
+* Shortcut for `getElementsByClassName()` and converted from `HTMLCollection` to `Element[]`.
+* @example
+* ```ts
+* const elements = docC("my-text-area");
+* ```
+*/
+export function docC(name:string):Element[]{
     return [...document.getElementsByClassName(name)];
 }
 
+/**
+* Get currently active element (`.checked === true`) among grouped radio buttons.
+* @example
+* ```ts
+* const element = radioActive("my-radio");
+* ```
+*/
 export function radioActive(name:string):Element | undefined{
-    return $nn(name).find(e => e instanceof HTMLInputElement && e.type === "radio" && e.checked);
+    return docN(name).find(e => e instanceof HTMLInputElement && e.type === "radio" && e.checked);
 }
