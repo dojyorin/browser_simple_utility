@@ -3,7 +3,7 @@
 /// <reference lib="dom"/>
 /// <reference lib="dom.iterable"/>
 
-import {type FileInit, base64Encode} from "../deps.ts";
+import {type FileInit, DataType, blobConvert} from "../deps.ts";
 
 interface FilePickerOption{
     excludeAcceptAllOption?: boolean;
@@ -23,36 +23,6 @@ declare global{
     function showOpenFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle[]>;
     function showSaveFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle>;
     function showDirectoryPicker(option?:DirectoryPickerOption): Promise<FileSystemDirectoryHandle>;
-}
-
-/**
-* Assignment of types convertible from binary.
-*/
-export interface BinaryType{
-    "text": string;
-    "base64": string;
-    "byte": Uint8Array;
-    "buffer": ArrayBuffer;
-    "blob": Blob;
-}
-
-/**
-* Convert from binary to specified data type.
-* @example
-* ```ts
-* const file = new File(["my-text"], "example.txt");
-* const data = await binaryConvert(file, "text");
-* ```
-*/
-export async function binaryConvert<T extends keyof BinaryType>(binary:Blob, type:T):Promise<BinaryType[T]>{
-    switch(type){
-        case "text": return <BinaryType[T]>await binary.text();
-        case "base64": return <BinaryType[T]>base64Encode(new Uint8Array(await binary.arrayBuffer()));
-        case "byte": return <BinaryType[T]>new Uint8Array(await binary.arrayBuffer());
-        case "buffer": return <BinaryType[T]>await binary.arrayBuffer();
-        case "blob": return <BinaryType[T]>new Blob([binary]);
-        default: throw new Error();
-    }
 }
 
 /**
@@ -152,8 +122,8 @@ export async function fsNativeFile(save?:boolean, option?:FilePickerOption):Prom
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends keyof BinaryType>(fsf:FileSystemFileHandle, type:T):Promise<BinaryType[T]>{
-    return await binaryConvert(await fsf.getFile(), type);
+export async function fsNativeRead<T extends keyof DataType>(fsf:FileSystemFileHandle, type:T):Promise<DataType[T]>{
+    return await blobConvert(await fsf.getFile(), type);
 }
 
 /**
