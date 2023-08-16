@@ -95,7 +95,7 @@ export function fsWrite(name:string, body:BlobPart):void{
 * const fsd = await fsNativeDirectory();
 * ```
 */
-export async function fsNativeDirectory(option?:DirectoryPickerOption){
+export async function fsNativeDirectory(option?:DirectoryPickerOption):Promise<FileSystemDirectoryHandle>{
     const fsd = await showDirectoryPicker(option);
 
     return fsd;
