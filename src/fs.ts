@@ -1,9 +1,4 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext"/>
-/// <reference lib="dom"/>
-/// <reference lib="dom.iterable"/>
-
-import {type FileInit, DataType, blobConvert} from "../deps.ts";
+import {type FileInit, BlobType, blobConvert} from "../deps.ts";
 
 interface FilePickerOption{
     excludeAcceptAllOption?: boolean;
@@ -122,7 +117,7 @@ export async function fsNativeFile(save?:boolean, option?:FilePickerOption):Prom
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends keyof DataType>(fsf:FileSystemFileHandle, type:T):Promise<DataType[T]>{
+export async function fsNativeRead<T extends keyof BlobType>(fsf:FileSystemFileHandle, type:T):Promise<BlobType[T]>{
     return await blobConvert(await fsf.getFile(), type);
 }
 

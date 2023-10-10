@@ -1,8 +1,3 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext"/>
-/// <reference lib="dom"/>
-/// <reference lib="dom.iterable"/>
-
 /**
 * Display fixed toast at top of screen.
 * Display for `5000` ms by default.

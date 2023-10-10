@@ -1,8 +1,3 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext"/>
-/// <reference lib="dom"/>
-/// <reference lib="dom.iterable"/>
-
 /**
 * Shortcut for `getElementById()` and non nullable.
 * @example
