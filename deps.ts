@@ -1,2 +1,2 @@
-// @deno-types="https://deno.land/x/simple_utility@v1.4.3/mod.ts"
-export {type FileInit, type BlobType, blobConvert} from "https://esm.sh/gh/dojyorin/deno_simple_utility@v1.4.3/mod.universal.ts?bundle&target=esnext";
+// @deno-types="https://deno.land/x/simple_utility@v1.4.4/mod.ts"
+export {type FileInit, type BlobType, blobConvert} from "https://esm.sh/gh/dojyorin/deno_simple_utility@v1.4.4/mod.universal.ts?bundle&target=esnext";
