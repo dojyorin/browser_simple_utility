@@ -1,4 +1,5 @@
 # **DOM Shortcut Pack**
+![actions:test](https://github.com/dojyorin/dom_shortcut_pack/actions/workflows/test.yaml/badge.svg)
 ![actions:release](https://github.com/dojyorin/dom_shortcut_pack/actions/workflows/release.yaml/badge.svg)
 ![shields:license](https://img.shields.io/github/license/dojyorin/dom_shortcut_pack)
 ![shields:release](https://img.shields.io/github/release/dojyorin/dom_shortcut_pack)
