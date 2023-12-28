@@ -9,7 +9,7 @@ export function docI(id:string):Element{
     const e = document.getElementById(id);
 
     if(!e){
-        throw new ReferenceError();
+        throw new Error();
     }
 
     return e;
