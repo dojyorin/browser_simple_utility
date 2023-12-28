@@ -60,7 +60,7 @@ export async function fsRead(multiple?:boolean, accept?:string):Promise<FileInit
     });
 
     if(!list){
-        throw new ReferenceError();
+        throw new Error();
     }
 
     return await fileList(list);
