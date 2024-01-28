@@ -10,8 +10,10 @@ Collection of frequently used DOM operations.
 Easy DOM.
 
 # Usage
-```ts
-export {fsRead} from "https://esm.sh/gh/dojyorin/dom_shortcut_pack@version/mod.ts?bundle&target=esnext";
+```html
+<script>
+    import {fsRead} from "https://esm.sh/gh/dojyorin/dom_shortcut_pack@version/mod.ts?bundle&target=esnext";
+</script>
 ```
 
 # API

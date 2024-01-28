@@ -1,9 +1,9 @@
 /**
 * Display fixed toast at top of screen.
-* Display for `5000` ms by default.
+* Default display time is 5000ms.
 * @example
 * ```ts
-* dialogNotify("Successfully!", "#13AD35");
+* dialogNotify("Complete!", "green");
 * ```
 */
 export function dialogNotify(message:string, color:string, time?:number):void{

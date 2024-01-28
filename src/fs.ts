@@ -1,83 +1,60 @@
-import {type FileInit, BlobType, blobConvert} from "../deps.ts";
-
-interface FilePickerOption{
-    excludeAcceptAllOption?: boolean;
-    types?: {
-        description?: string;
-        accept?: Record<string, string>;
-    }[];
-}
-
-interface DirectoryPickerOption{
-    id?: number;
-    mode?: "read" | "readwrite";
-    startIn?: FileSystemHandle | "desktop" | "documents" | "downloads" | "music" | "pictures" | "videos";
-}
-
-declare global{
-    function showOpenFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle[]>;
-    function showSaveFilePicker(option?:FilePickerOption): Promise<FileSystemFileHandle>;
-    function showDirectoryPicker(option?:DirectoryPickerOption): Promise<FileSystemDirectoryHandle>;
-}
+import {type DataMap, blobConvert} from "../deps.ts";
 
 /**
-* Extract data from file input interface.
+* Extract data from file interface.
 * @example
 * ```ts
-* const element = document.getElementById("input-file");
-* const files = await fileList(element);
+* const files = await fileList(document.getElementById("input-file"));
 * ```
 */
-export async function fileList(input:File[] | FileList | HTMLInputElement):Promise<FileInit[]>{
-    const files:FileInit[] = [];
+export async function fileList(input:File[] | FileList | HTMLInputElement):Promise<DataMap[]>{
+    const files:DataMap[] = [];
 
     for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]){
-        files.push([
-            file.name,
-            new Uint8Array(await file.arrayBuffer())
-        ]);
+        files.push({
+            name: file.name,
+            body: await blobConvert(file, "byte")
+        });
     }
 
     return files;
 }
 
 /**
-* Generate `<input>` elements in JavaScript and read files without appending to real DOM.
+* Read files.
 * @example
 * ```ts
 * const files = await fsRead();
 * ```
 */
-export async function fsRead(multiple?:boolean, accept?:string):Promise<FileInit[]>{
-    const input = document.createElement("input");
-    input.type = "file";
-    input.multiple = multiple ?? false;
-    input.accept = accept ?? "";
-
-    const list = await new Promise<FileList | null>((done)=>{
-        input.oninput = () => done(input.files);
+export async function fsRead(multiple?:boolean, accept?:string):Promise<DataMap[]>{
+    const file = await new Promise<FileList | null>((res)=>{
+        const input = document.createElement("input");
+        input.type = "file";
+        input.multiple = multiple ?? false;
+        input.accept = accept ?? "";
+        input.oninput = () => res(input.files);
         input.click();
     });
 
-    if(!list){
+    if(!file){
         throw new Error();
     }
 
-    return await fileList(list);
+    return await fileList(file);
 }
 
 /**
-* Generate `<a download>` elements in JavaScript and write file without appending to real DOM.
+* Write file.
 * @example
 * ```ts
 * fsWrite("example.txt", "my-text");
 * ```
 */
-export function fsWrite(name:string, body:BlobPart):void{
+export function fsWrite(name:string, body:string | Uint8Array):void{
     const anchor = document.createElement("a");
     anchor.download = name;
     anchor.href = URL.createObjectURL(new Blob([body]));
-
     anchor.click();
 
     URL.revokeObjectURL(anchor.href);
@@ -90,7 +67,7 @@ export function fsWrite(name:string, body:BlobPart):void{
 * const fsd = await fsNativeDirectory();
 * ```
 */
-export async function fsNativeDirectory(option?:DirectoryPickerOption):Promise<FileSystemDirectoryHandle>{
+export async function fsNativeDirectory(option?:DirectoryPickerOptions):Promise<FileSystemDirectoryHandle>{
     const fsd = await showDirectoryPicker(option);
 
     return fsd;
@@ -103,7 +80,7 @@ export async function fsNativeDirectory(option?:DirectoryPickerOption):Promise<F
 * const fsf = await fsNativeFile();
 * ```
 */
-export async function fsNativeFile(save?:boolean, option?:FilePickerOption):Promise<FileSystemFileHandle>{
+export async function fsNativeFile(save?:boolean, option?:FilePickerOptions):Promise<FileSystemFileHandle>{
     const [fsf] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
 
     return fsf;
@@ -117,8 +94,8 @@ export async function fsNativeFile(save?:boolean, option?:FilePickerOption):Prom
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends keyof BlobType>(fsf:FileSystemFileHandle, type:T):Promise<BlobType[T]>{
-    return await blobConvert(await fsf.getFile(), type);
+export async function fsNativeRead<T extends "text" | "byte">(fsf:FileSystemFileHandle, type:T):Promise<T extends "text" ? string : T extends "byte" ? Uint8Array : never>{
+    return <T extends "text" ? string : T extends "byte" ? Uint8Array : never>await blobConvert(await fsf.getFile(), type);
 }
 
 /**
@@ -129,9 +106,8 @@ export async function fsNativeRead<T extends keyof BlobType>(fsf:FileSystemFileH
 * await fsNativeWrite(fsf, "my-text");
 * ```
 */
-export async function fsNativeWrite(fsf:FileSystemFileHandle, data:FileSystemWriteChunkType):Promise<void>{
-    const sw = await fsf.createWritable();
-
-    await sw.write(data);
-    await sw.close();
+export async function fsNativeWrite(fsf:FileSystemFileHandle, data:string | Uint8Array):Promise<void>{
+    const context = await fsf.createWritable();
+    await context.write(data);
+    await context.close();
 }

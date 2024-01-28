@@ -1,5 +1,5 @@
 /**
-* Shortcut for `getElementById()` and non nullable.
+* Shorthand for `getElementById()` and non nullable.
 * @example
 * ```ts
 * const element = docI("my-text-area");
@@ -16,7 +16,7 @@ export function docI(id:string):Element{
 }
 
 /**
-* Shortcut for `getElementsByName()` and converted from `NodeList` to `Element[]`.
+* Shorthand for `getElementsByName()` and converted from `NodeList` to `Element[]`.
 * @example
 * ```ts
 * const elements = docN("my-text-area");
@@ -27,7 +27,7 @@ export function docN(name:string):Element[]{
 }
 
 /**
-* Shortcut for `getElementsByClassName()` and converted from `HTMLCollection` to `Element[]`.
+* Shorthand for `getElementsByClassName()` and converted from `HTMLCollection` to `Element[]`.
 * @example
 * ```ts
 * const elements = docC("my-text-area");
@@ -45,5 +45,5 @@ export function docC(name:string):Element[]{
 * ```
 */
 export function radioActive(name:string):Element | undefined{
-    return docN(name).find(e => e instanceof HTMLInputElement && e.type === "radio" && e.checked);
+    return docN(name).find(v => v instanceof HTMLInputElement && v.type === "radio" && v.checked);
 }
