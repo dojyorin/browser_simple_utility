@@ -1,4 +1,10 @@
-import {type DataMap, blobConvert} from "../deps.ts";
+/**
+* Simple name and data pair.
+*/
+interface DataMap{
+    name: string;
+    body: Uint8Array;
+}
 
 /**
 * Extract data from file interface.
@@ -13,7 +19,7 @@ export async function fileList(input:File[] | FileList | HTMLInputElement):Promi
     for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]){
         files.push({
             name: file.name,
-            body: await blobConvert(file, "byte")
+            body: new Uint8Array(await file.arrayBuffer())
         });
     }
 
@@ -94,8 +100,14 @@ export async function fsNativeFile(save?:boolean, option?:FilePickerOptions):Pro
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends "text" | "byte">(fsf:FileSystemFileHandle, type:T):Promise<T extends "text" ? string : T extends "byte" ? Uint8Array : never>{
-    return <T extends "text" ? string : T extends "byte" ? Uint8Array : never>await blobConvert(await fsf.getFile(), type);
+export async function fsNativeRead<T extends "byte" | "text">(fsf:FileSystemFileHandle, type:T):Promise<T extends "byte" ? Uint8Array : T extends "text" ? string : never>{
+    const file = await fsf.getFile();
+
+    switch(type){
+        case "byte": return <T extends "byte" ? Uint8Array : T extends "text" ? string : never>new Uint8Array(await file.arrayBuffer());
+        case "text": return <T extends "byte" ? Uint8Array : T extends "text" ? string : never>await file.text();
+        default: throw new Error();
+    }
 }
 
 /**
