@@ -3,4 +3,4 @@
 /// <reference lib="dom"/>
 /// <reference lib="dom.iterable"/>
 
-export type * from "npm:@types/wicg-file-system-access@2023.10.4";
+export type * from "npm:@types/wicg-file-system-access@2023.10.5";
