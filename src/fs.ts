@@ -34,18 +34,14 @@ export async function fileList(input:File[] | FileList | HTMLInputElement):Promi
 * ```
 */
 export async function fsRead(multiple?:boolean, accept?:string):Promise<DataMap[]>{
-    const file = await new Promise<FileList | null>((res)=>{
+    const file = await new Promise<FileList>((res, rej)=>{
         const input = document.createElement("input");
         input.type = "file";
         input.multiple = multiple ?? false;
         input.accept = accept ?? "";
-        input.oninput = () => res(input.files);
+        input.oninput = () => input.files ? res(input.files) : rej();
         input.click();
     });
-
-    if(!file){
-        throw new Error();
-    }
 
     return await fileList(file);
 }
@@ -57,7 +53,7 @@ export async function fsRead(multiple?:boolean, accept?:string):Promise<DataMap[
 * fsWrite("example.txt", "my-text");
 * ```
 */
-export function fsWrite(name:string, body:string | Uint8Array):void{
+export function fsWrite(name:string, body:BlobPart):void{
     const anchor = document.createElement("a");
     anchor.download = name;
     anchor.href = URL.createObjectURL(new Blob([body]));
