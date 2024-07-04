@@ -1,9 +1,9 @@
-interface ReturnType {
+interface ReturnTypeMap {
     "text": string;
     "byte": Uint8Array;
 }
 
-interface DataMap {
+interface DataEntry {
     name: string;
     body: Uint8Array;
 }
@@ -15,8 +15,8 @@ interface DataMap {
 * const files = await fileList(document.getElementById("input-file"));
 * ```
 */
-export async function fileList(input: File[] | FileList | HTMLInputElement): Promise<DataMap[]> {
-    const files: DataMap[] = [];
+export async function fileList(input: File[] | FileList | HTMLInputElement): Promise<DataEntry[]> {
+    const files: DataEntry[] = [];
 
     for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]) {
         files.push({
@@ -35,7 +35,7 @@ export async function fileList(input: File[] | FileList | HTMLInputElement): Pro
 * const files = await fsRead();
 * ```
 */
-export async function fsRead(multiple?: boolean, accept?: string): Promise<DataMap[]> {
+export async function fsRead(multiple?: boolean, accept?: string): Promise<DataEntry[]> {
     const file = await new Promise<FileList>((res, rej) => {
         const input = document.createElement("input");
         input.type = "file";
@@ -98,12 +98,12 @@ export async function fsNativeFile(save?: boolean, option?: FilePickerOptions): 
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends keyof ReturnType>(handle: FileSystemFileHandle, type: T): Promise<ReturnType[T]> {
+export async function fsNativeRead<T extends keyof ReturnTypeMap>(handle: FileSystemFileHandle, type: T): Promise<ReturnTypeMap[T]> {
     const file = await handle.getFile();
 
     switch(type) {
-        case "byte": return <ReturnType[T]> new Uint8Array(await file.arrayBuffer());
-        case "text": return <ReturnType[T]> await file.text();
+        case "byte": return <ReturnTypeMap[T]> new Uint8Array(await file.arrayBuffer());
+        case "text": return <ReturnTypeMap[T]> await file.text();
         default: throw new Error();
     }
 }
