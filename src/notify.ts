@@ -6,7 +6,7 @@
 * dialogNotify("Complete!", "green");
 * ```
 */
-export function dialogNotify(message:string, color:string, time?:number):void{
+export function dialogNotify(message: string, color: string, time?: number): void {
     const dialog = document.createElement("dialog");
     dialog.style.position = "fixed";
     dialog.style.zIndex = "255";

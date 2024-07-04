@@ -1,7 +1,9 @@
-/**
-* Simple name and data pair.
-*/
-interface DataMap{
+interface ReturnType {
+    "text": string;
+    "byte": Uint8Array;
+}
+
+interface DataMap {
     name: string;
     body: Uint8Array;
 }
@@ -13,10 +15,10 @@ interface DataMap{
 * const files = await fileList(document.getElementById("input-file"));
 * ```
 */
-export async function fileList(input:File[] | FileList | HTMLInputElement):Promise<DataMap[]>{
-    const files:DataMap[] = [];
+export async function fileList(input: File[] | FileList | HTMLInputElement): Promise<DataMap[]> {
+    const files: DataMap[] = [];
 
-    for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]){
+    for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]) {
         files.push({
             name: file.name,
             body: new Uint8Array(await file.arrayBuffer())
@@ -33,8 +35,8 @@ export async function fileList(input:File[] | FileList | HTMLInputElement):Promi
 * const files = await fsRead();
 * ```
 */
-export async function fsRead(multiple?:boolean, accept?:string):Promise<DataMap[]>{
-    const file = await new Promise<FileList>((res, rej)=>{
+export async function fsRead(multiple?: boolean, accept?: string): Promise<DataMap[]> {
+    const file = await new Promise<FileList>((res, rej) => {
         const input = document.createElement("input");
         input.type = "file";
         input.multiple = multiple ?? false;
@@ -53,7 +55,7 @@ export async function fsRead(multiple?:boolean, accept?:string):Promise<DataMap[
 * fsWrite("example.txt", "my-text");
 * ```
 */
-export function fsWrite(name:string, body:BlobPart):void{
+export function fsWrite(name: string, body: BlobPart): void {
     const anchor = document.createElement("a");
     anchor.download = name;
     anchor.href = URL.createObjectURL(new Blob([body]));
@@ -69,10 +71,10 @@ export function fsWrite(name:string, body:BlobPart):void{
 * const fsd = await fsNativeDirectory();
 * ```
 */
-export async function fsNativeDirectory(option?:DirectoryPickerOptions):Promise<FileSystemDirectoryHandle>{
-    const fsd = await showDirectoryPicker(option);
+export async function fsNativeDirectory(option?: DirectoryPickerOptions): Promise<FileSystemDirectoryHandle> {
+    const handle = await showDirectoryPicker(option);
 
-    return fsd;
+    return handle;
 }
 
 /**
@@ -82,10 +84,10 @@ export async function fsNativeDirectory(option?:DirectoryPickerOptions):Promise<
 * const fsf = await fsNativeFile();
 * ```
 */
-export async function fsNativeFile(save?:boolean, option?:FilePickerOptions):Promise<FileSystemFileHandle>{
-    const [fsf] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
+export async function fsNativeFile(save?: boolean, option?: FilePickerOptions): Promise<FileSystemFileHandle> {
+    const [handle] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
 
-    return fsf;
+    return handle;
 }
 
 /**
@@ -96,12 +98,12 @@ export async function fsNativeFile(save?:boolean, option?:FilePickerOptions):Pro
 * const data = await fsNativeRead(fsf, "byte");
 * ```
 */
-export async function fsNativeRead<T extends "byte" | "text">(fsf:FileSystemFileHandle, type:T):Promise<T extends "byte" ? Uint8Array : T extends "text" ? string : never>{
-    const file = await fsf.getFile();
+export async function fsNativeRead<T extends keyof ReturnType>(handle: FileSystemFileHandle, type: T): Promise<ReturnType[T]> {
+    const file = await handle.getFile();
 
-    switch(type){
-        case "byte": return <T extends "byte" ? Uint8Array : T extends "text" ? string : never>new Uint8Array(await file.arrayBuffer());
-        case "text": return <T extends "byte" ? Uint8Array : T extends "text" ? string : never>await file.text();
+    switch(type) {
+        case "byte": return <ReturnType[T]> new Uint8Array(await file.arrayBuffer());
+        case "text": return <ReturnType[T]> await file.text();
         default: throw new Error();
     }
 }
@@ -114,8 +116,8 @@ export async function fsNativeRead<T extends "byte" | "text">(fsf:FileSystemFile
 * await fsNativeWrite(fsf, "my-text");
 * ```
 */
-export async function fsNativeWrite(fsf:FileSystemFileHandle, data:string | Uint8Array):Promise<void>{
-    const context = await fsf.createWritable();
+export async function fsNativeWrite(handle: FileSystemFileHandle, data: string | Uint8Array): Promise<void> {
+    const context = await handle.createWritable();
     await context.write(data);
     await context.close();
 }
