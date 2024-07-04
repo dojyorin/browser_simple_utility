@@ -1,10 +1,10 @@
 # **DOM API Shorthand**
-![actions:test](https://github.com/dojyorin/dom_api_shorthand/actions/workflows/test.yaml/badge.svg)
-![actions:release](https://github.com/dojyorin/dom_api_shorthand/actions/workflows/release.yaml/badge.svg)
-![shields:license](https://img.shields.io/github/license/dojyorin/dom_api_shorthand)
-![shields:release](https://img.shields.io/github/release/dojyorin/dom_api_shorthand)
+![actions:test](https://github.com/dojyorin/browser_simple_utility/actions/workflows/test.yaml/badge.svg)
+![actions:release](https://github.com/dojyorin/browser_simple_utility/actions/workflows/release.yaml/badge.svg)
+![shields:license](https://img.shields.io/github/license/dojyorin/browser_simple_utility)
+![shields:release](https://img.shields.io/github/release/dojyorin/browser_simple_utility)
 
-Easy DOM API.
+Collection of frequently used DOM and Web API operations.
 
 # Details
 Provides convenient shorthand for working with DOM API.
@@ -12,7 +12,7 @@ Provides convenient shorthand for working with DOM API.
 # Usage
 ```html
 <script>
-    import {fsRead} from "https://esm.sh/gh/dojyorin/dom_api_shorthand@version/mod.ts?bundle&target=esnext";
+    import {fsRead} from "https://esm.sh/gh/dojyorin/browser_simple_utility@version/mod.ts?bundle&target=esnext";
 </script>
 ```
 
