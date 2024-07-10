@@ -1,4 +1,4 @@
-# **DOM API Shorthand**
+# **Browser Simple Utility**
 ![actions:test](https://github.com/dojyorin/browser_simple_utility/actions/workflows/test.yaml/badge.svg)
 ![actions:release](https://github.com/dojyorin/browser_simple_utility/actions/workflows/release.yaml/badge.svg)
 ![shields:license](https://img.shields.io/github/license/dojyorin/browser_simple_utility)
