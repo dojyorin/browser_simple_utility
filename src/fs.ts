@@ -1,8 +1,3 @@
-interface ReturnTypeMap {
-    "text": string;
-    "byte": Uint8Array;
-}
-
 interface DataEntry {
     name: string;
     body: Uint8Array;
@@ -62,62 +57,4 @@ export function fsWrite(name: string, body: BlobPart): void {
     anchor.click();
 
     URL.revokeObjectURL(anchor.href);
-}
-
-/**
-* Get directory handle to native filesystem.
-* @example
-* ```ts
-* const fsd = await fsNativeDirectory();
-* ```
-*/
-export async function fsNativeDirectory(option?: DirectoryPickerOptions): Promise<FileSystemDirectoryHandle> {
-    const handle = await showDirectoryPicker(option);
-
-    return handle;
-}
-
-/**
-* Get file handle to native filesystem.
-* @example
-* ```ts
-* const fsf = await fsNativeFile();
-* ```
-*/
-export async function fsNativeFile(save?: boolean, option?: FilePickerOptions): Promise<FileSystemFileHandle> {
-    const [handle] = save ? [await showSaveFilePicker(option)] : await showOpenFilePicker(option);
-
-    return handle;
-}
-
-/**
-* Read file given native filesystem handle.
-* @example
-* ```ts
-* const fsf = await fsNativeFile();
-* const data = await fsNativeRead(fsf, "byte");
-* ```
-*/
-export async function fsNativeRead<T extends keyof ReturnTypeMap>(handle: FileSystemFileHandle, type: T): Promise<ReturnTypeMap[T]> {
-    const file = await handle.getFile();
-
-    switch(type) {
-        case "byte": return <ReturnTypeMap[T]> new Uint8Array(await file.arrayBuffer());
-        case "text": return <ReturnTypeMap[T]> await file.text();
-        default: throw new Error();
-    }
-}
-
-/**
-* Write file given native filesystem handle.
-* @example
-* ```ts
-* const fsf = await fsNativeFile(true);
-* await fsNativeWrite(fsf, "my-text");
-* ```
-*/
-export async function fsNativeWrite(handle: FileSystemFileHandle, data: string | Uint8Array): Promise<void> {
-    const context = await handle.createWritable();
-    await context.write(data);
-    await context.close();
 }
