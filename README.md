@@ -11,7 +11,7 @@ Provides convenient shorthand for working with DOM API.
 
 # Usage
 ```html
-<script>
+<script async type="module">
     import {fsRead} from "https://esm.sh/gh/dojyorin/browser_simple_utility@version/mod.ts?bundle&target=esnext";
 </script>
 ```
