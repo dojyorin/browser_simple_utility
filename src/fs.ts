@@ -11,6 +11,22 @@ if(!Blob.prototype.bytes) {
 }
 
 /**
+* Extract binary from file interface.
+* @example
+* ```ts
+* const files = await fsParse(document.getElementById("input-file"));
+* ```
+*/
+export async function fsParse(input: File[] | FileList | HTMLInputElement): Promise<DataEntry[]> {
+    return await Array.fromAsync(input instanceof HTMLInputElement ? input.files ?? [] : input, async (v) => {
+        return {
+            name: v.name,
+            body: await v.bytes()
+        };
+    });
+}
+
+/**
 * Read files.
 * @example
 * ```ts
@@ -24,7 +40,7 @@ export async function fsRead(multiple?: boolean, accept?: string): Promise<DataE
         input.multiple = multiple ?? false;
         input.accept = accept ?? "";
 
-        input.oninput = () => input.files ? res(Array.fromAsync(input.files, async v => ({name: v.name, body: await v.bytes()}))) : rej();
+        input.oninput = () => input.files ? res(fsParse(input)) : rej();
         input.click();
     });
 }
