@@ -13,7 +13,7 @@ export function dialogNotify(message: string, color: string, time?: number): voi
     dialog.style.top = "16px";
     dialog.style.padding = "8px 16px";
     dialog.style.maxWidth = "calc(100dvw - 20px)";
-    dialog.style.border = "0";
+    dialog.style.border = "none";
     dialog.style.borderRadius = "8px";
     dialog.style.fontSize = "16px";
     dialog.style.backgroundColor = color;
