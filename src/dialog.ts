@@ -1,6 +1,6 @@
 /**
-* Display fixed toast at top of screen.
-* Default display time is 5000ms.
+* Show notification at top of screen.
+* Default lifetime is 5000ms.
 * @example
 * ```ts
 * showNotify("Complete!", "green");
