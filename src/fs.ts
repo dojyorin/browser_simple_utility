@@ -3,24 +3,11 @@ interface DataEntry {
     body: Uint8Array;
 }
 
-/**
-* Extract data from file interface.
-* @example
-* ```ts
-* const files = await fileList(document.getElementById("input-file"));
-* ```
-*/
-export async function fileList(input: File[] | FileList | HTMLInputElement): Promise<DataEntry[]> {
-    const files: DataEntry[] = [];
-
-    for(const file of [...input instanceof HTMLInputElement ? input.files ?? [] : input]) {
-        files.push({
-            name: file.name,
-            body: new Uint8Array(await file.arrayBuffer())
-        });
+// for Chromium
+if(!Blob.prototype.bytes) {
+    Blob.prototype.bytes = async function() {
+        return new Uint8Array(await this.arrayBuffer());
     }
-
-    return files;
 }
 
 /**
@@ -31,16 +18,15 @@ export async function fileList(input: File[] | FileList | HTMLInputElement): Pro
 * ```
 */
 export async function fsRead(multiple?: boolean, accept?: string): Promise<DataEntry[]> {
-    const file = await new Promise<FileList>((res, rej) => {
+    return await new Promise((res, rej) => {
         const input = document.createElement("input");
         input.type = "file";
         input.multiple = multiple ?? false;
         input.accept = accept ?? "";
-        input.oninput = () => input.files ? res(input.files) : rej();
+
+        input.oninput = () => input.files ? res(Array.fromAsync(input.files, async v => ({name: v.name, body: await v.bytes()}))) : rej();
         input.click();
     });
-
-    return await fileList(file);
 }
 
 /**
@@ -54,6 +40,7 @@ export function fsWrite(name: string, body: BlobPart): void {
     const anchor = document.createElement("a");
     anchor.download = name;
     anchor.href = URL.createObjectURL(new Blob([body]));
+
     anchor.click();
 
     URL.revokeObjectURL(anchor.href);
