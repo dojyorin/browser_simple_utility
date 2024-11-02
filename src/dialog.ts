@@ -80,5 +80,5 @@ export function factoryLoading(color: string): (enable: boolean) => void {
     dialog.appendChild(style);
     document.body.appendChild(dialog);
 
-    return enable => enable ? dialog.showModal() : dialog.close();
+    return (enable) => enable ? dialog.showModal() : dialog.close();
 }
