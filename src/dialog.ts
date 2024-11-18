@@ -6,7 +6,7 @@
 * showNotify("Complete!", "green");
 * ```
 */
-export function showNotify(message: string, color: string, time?: number): void {
+export function showNotify(message: string, color: string, timeout?: number): void {
     const dialog = document.createElement("dialog");
     dialog.textContent = message;
 
@@ -33,7 +33,7 @@ export function showNotify(message: string, color: string, time?: number): void 
     dialog.appendChild(style);
     document.body.appendChild(dialog);
 
-    setTimeout(() => dialog.remove(), time ?? 5000);
+    setTimeout(() => dialog.remove(), timeout ?? 5000);
 
     dialog.show();
 }
