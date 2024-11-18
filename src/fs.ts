@@ -1,13 +1,11 @@
-interface DataEntry {
+interface Binary {
     name: string;
     body: Uint8Array;
 }
 
-// for Chromium
-if(!Blob.prototype.bytes) {
-    Blob.prototype.bytes = async function() {
-        return new Uint8Array(await this.arrayBuffer());
-    }
+// esnext-polyfill
+Blob.prototype.bytes ??= async function() {
+    return new Uint8Array(await this.arrayBuffer());
 }
 
 /**
@@ -17,7 +15,7 @@ if(!Blob.prototype.bytes) {
 * const files = await fsParse(document.getElementById("input-file"));
 * ```
 */
-export async function fsParse(input: File[] | FileList | HTMLInputElement): Promise<DataEntry[]> {
+export async function fsParse(input: File[] | FileList | HTMLInputElement): Promise<Binary[]> {
     return await Array.fromAsync(input instanceof HTMLInputElement ? input.files ?? [] : input, async (v) => {
         return {
             name: v.name,
@@ -33,7 +31,7 @@ export async function fsParse(input: File[] | FileList | HTMLInputElement): Prom
 * const files = await fsRead();
 * ```
 */
-export async function fsRead(multiple?: boolean, accept?: string): Promise<DataEntry[]> {
+export async function fsRead(multiple?: boolean, accept?: string): Promise<Binary[]> {
     return await new Promise((res, rej) => {
         const input = document.createElement("input");
         input.type = "file";

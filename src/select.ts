@@ -6,9 +6,9 @@
 * ```
 */
 export function radioActive(name: string): HTMLInputElement | undefined {
-    for(const v of document.getElementsByName(name)) {
-        if(v instanceof HTMLInputElement && v.type === "radio" && v.checked) {
-            return v;
+    for(const element of document.getElementsByName(name)) {
+        if(element instanceof HTMLInputElement && element.type === "radio" && element.checked) {
+            return element;
         }
     }
 }
