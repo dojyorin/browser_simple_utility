@@ -8,9 +8,9 @@
 */
 export function showNotify(message: string, color: string, timeout?: number): void {
     const dialog = document.createElement("dialog");
-    dialog.textContent = message;
-
     const style = document.createElement("style");
+
+    dialog.textContent = message;
     style.textContent = /*css*/`
         @scope {
             & {
@@ -50,6 +50,7 @@ export function showNotify(message: string, color: string, timeout?: number): vo
 export function factoryLoading(color: string): (enable: boolean) => void {
     const dialog = document.createElement("dialog");
     const style = document.createElement("style");
+
     style.textContent = /*css*/`
         @scope {
             @keyframes loading {
